@@ -1,0 +1,181 @@
+Description: Only the library in src/ is configured and built
+ The packages ship only the library, its header, pkg-config file and
+ autoconf macro. Without doc/ and tests/ in configure.ac and SUBDIRS,
+ automake does not read the manual or the test makefiles. Without
+ src/versioninfo.rc and src/ksba-config, configure does not read their
+ templates. ber-dump is not built: the packages do not ship it. Only
+ ber-dump and the tests used gnulib's gl/, so gl/ is not configured.
+ m4/Makefile only lists the macros for make dist, so it is not
+ configured either.
+ In foreign mode automake needs no AUTHORS, ChangeLog, INSTALL, NEWS,
+ README or COPYING. AB_INIT only logs build details, so autobuild.m4 is
+ not used.
+Author: The Blueberry Pie OS Authors
+Forwarded: not-needed
+Last-Update: 2026-11-04
+---
+--- a/Makefile.am
++++ b/Makefile.am
+@@ -15,6 +15,9 @@
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with this program; if not, see <http://www.gnu.org/licenses/>.
++#
++# Modified 2026-11-04: only src/ is built (GPL-3.0 section 5(a)).
++# Modified 2026-11-04: gl/m4 is not used (GPL-3.0 section 5(a)).
+ 
+ ## Process this file with automake to produce Makefile.in
+ 
+@@ -23,7 +26,7 @@
+ # RELEASE_ARCHIVE=wk@somehost:archive/tarballs
+ RELEASE_ARCHIVE_SUFFIX  = libksba
+ 
+-ACLOCAL_AMFLAGS = -I m4 -I gl/m4
++ACLOCAL_AMFLAGS = -I m4
+ DISTCHECK_CONFIGURE_FLAGS = --enable-doc
+ 
+ # (A suitable gitlog-to-changelog script can be found in GnuPG master.)
+@@ -37,19 +40,7 @@
+ 	     build-aux/git-log-footer build-aux/git-log-fix
+ 
+ 
+-if CROSS_COMPILING
+-tests =
+-else
+-tests = tests
+-endif
+-
+-if BUILD_DOC
+-doc = doc
+-else
+-doc =
+-endif
+-
+-SUBDIRS = m4 gl src $(tests) $(doc)
++SUBDIRS = src
+ 
+ dist-hook: gen-ChangeLog
+ 
+--- a/configure.ac
++++ b/configure.ac
+@@ -18,6 +18,13 @@
+ # along with this program; if not, see <http://www.gnu.org/licenses/>.
+ #
+ # Modified 2026-11-03: the version list is the release's, not git's (GPL-3.0 section 5(a)).
++# Modified 2026-11-04: automake runs in foreign mode (GPL-3.0 section 5(a)).
++# Modified 2026-11-04: AB_INIT is not used (GPL-3.0 section 5(a)).
++# Modified 2026-11-04: the doc switch is removed (GPL-3.0 section 5(a)).
++# Modified 2026-11-04: doc/ and tests/ are not configured (GPL-3.0 section 5(a)).
++# Modified 2026-11-04: the Windows version resource is not configured (GPL-3.0 section 5(a)).
++# Modified 2026-11-04: ksba-config is not made (GPL-3.0 section 5(a)).
++# Modified 2026-11-04: gnulib and m4/Makefile are not used (GPL-3.0 section 5(a)).
+ 
+ # Process this file with autoconf to produce a configure script.
+ AC_PREREQ([2.69])
+@@ -64,11 +71,10 @@
+ 
+ AC_CONFIG_AUX_DIR([build-aux])
+ AC_CONFIG_SRCDIR([src/ksba.h.in])
+-AM_INIT_AUTOMAKE([serial-tests dist-bzip2 no-dist-gzip])
++AM_INIT_AUTOMAKE([foreign serial-tests dist-bzip2 no-dist-gzip])
+ AC_CONFIG_HEADERS([config.h])
+ AC_CONFIG_MACRO_DIR([m4])
+ AC_CANONICAL_HOST
+-AB_INIT
+ 
+ AC_USE_SYSTEM_EXTENSIONS
+ AC_ARG_VAR(SYSROOT,[locate config scripts also below that directory])
+@@ -157,7 +163,6 @@
+ AC_PROG_INSTALL
+ AC_PROG_LN_S
+ AC_PROG_MAKE_SET
+-gl_EARLY
+ #AC_ARG_PROGRAM
+ AC_PROG_YACC
+ AX_PROG_BISON([have_bison=yes],[have_bison=no])
+@@ -433,12 +438,6 @@
+ AC_CHECK_FUNCS([stpcpy gmtime_r getenv])
+ 
+ 
+-# GNUlib checks
+-gl_SOURCE_BASE(gl)
+-gl_M4_BASE(gl/m4)
+-gl_MODULES(alloca valgrind-tests)
+-gl_INIT
+-
+ # To be used in ksba-config
+ KSBA_CONFIG_LIBS="-lksba"
+ KSBA_CONFIG_CFLAGS=""
+@@ -480,24 +479,11 @@
+ AC_DEFINE_UNQUOTED(BUILD_TIMESTAMP, "$BUILD_TIMESTAMP",
+                    [The time this package was configured for a build])
+ 
+-build_doc=yes
+-AC_ARG_ENABLE([doc], AS_HELP_STRING([--disable-doc],
+-                                    [do not build the documentation]),
+-                     build_doc=$enableval, build_doc=yes)
+-AM_CONDITIONAL([BUILD_DOC], [test "x$build_doc" != xno])
+-
+-
+ AC_CONFIG_FILES([
+ Makefile
+-m4/Makefile
+-gl/Makefile
+ src/Makefile
+ src/ksba.h
+-src/ksba-config
+ src/ksba.pc
+-src/versioninfo.rc
+-tests/Makefile
+-doc/Makefile
+ ])
+ AC_OUTPUT
+ 
+--- a/src/Makefile.am
++++ b/src/Makefile.am
+@@ -15,6 +15,9 @@
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with this program; if not, see <http://www.gnu.org/licenses/>.
++#
++# Modified 2026-11-04: ksba-config and ber-dump are not made (GPL-3.0 section 5(a)).
++# Modified 2026-11-04: gl/ is not used (GPL-3.0 section 5(a)).
+ 
+ ## Process this file with automake to produce Makefile.in
+ 
+@@ -28,14 +31,8 @@
+              libksba.vers libksba.def \
+ 	     asn1-parse.c asn1-tables.c $(buildtool_src) ksba.pc.in
+ BUILT_SOURCES = asn1-parse.c asn1-tables.c
+-if USE_GPGRT_CONFIG
+-noinst_SCRIPTS = ksba-config
+-else
+-bin_SCRIPTS = ksba-config
+-endif
+ nodist_include_HEADERS = ksba.h
+ lib_LTLIBRARIES = libksba.la
+-noinst_PROGRAMS = ber-dump
+ 
+ m4datadir = $(datadir)/aclocal
+ m4data_DATA = ksba.m4
+@@ -43,7 +40,6 @@
+ CLEANFILES = asn1-gentables
+ DISTCLEANFILES = asn1-tables.c
+ 
+-AM_CPPFLAGS =  -I$(top_builddir)/gl -I$(top_srcdir)/gl
+ AM_CFLAGS = $(GPG_ERROR_CFLAGS) $(COVERAGE_CFLAGS)
+ 
+ 
+@@ -117,12 +113,6 @@
+ 	sexp-parse.h \
+ 	asn1-tables.c
+ 
+-ber_dump_SOURCES = ber-dump.c \
+-                   ber-decoder.c ber-help.c reader.c writer.c asn1-parse.c \
+-                   asn1-func.c oid.c time.c util.c
+-ber_dump_LDADD = $(GPG_ERROR_LIBS) ../gl/libgnu.la
+-ber_dump_CFLAGS = $(AM_CFLAGS)
+-
+ asn1-parse.c : asn1-func.h gen-help.h
+ 
+ asn1-gentables$(EXEEXT_FOR_BUILD): asn1-gentables.c asn1-parse.c asn1-func.c \

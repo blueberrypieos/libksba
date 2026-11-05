@@ -1,0 +1,25 @@
+Source: libksba
+Section: libs
+Priority: optional
+Maintainer: Maxwell <maxwell@blueberrypieos.com>
+Build-Depends: pietoolchain (>= 0.1.0), autoconf, automake, libtool, bison, libgpg-error-dev (>= 1.61)
+Standards-Version: 4.7.3
+Homepage: https://www.gnupg.org/software/libksba/
+Vcs-Git: https://github.com/blueberrypieos/libksba.git -b blueberry-pie-os/latest
+Vcs-Browser: https://github.com/blueberrypieos/libksba
+Rules-Requires-Root: no
+
+Package: libksba
+Architecture: darwin-arm64
+Depends: libgpg-error (>= 1.61), libsystem
+Description: X.509 and CMS library
+ libksba parses and builds X.509 certificates, CRLs and CMS
+ messages. GnuPG uses it for S/MIME and for certificates.
+
+Package: libksba-dev
+Section: libdevel
+Architecture: darwin-arm64
+Depends: libksba (= ${binary:Version}), libgpg-error-dev (>= 1.61)
+Description: X.509 and CMS library: development files
+ The header, the pkg-config file and the autoconf macro for building
+ programs against libksba.

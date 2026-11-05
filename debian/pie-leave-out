@@ -1,0 +1,15 @@
+AUTHORS
+COPYING
+COPYING.GPLv2
+COPYING.GPLv3
+COPYING.LGPLv3
+ChangeLog
+INSTALL
+NEWS
+README
+THANKS
+TODO
+build-aux/mdate-sh
+build-aux/texinfo.tex
+m4/autobuild.m4
+mkinstalldirs

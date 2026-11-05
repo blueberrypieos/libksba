@@ -1,0 +1,4 @@
+usr/include/ksba.h
+usr/lib/libksba.dylib
+usr/lib/pkgconfig/ksba.pc
+usr/share/aclocal/ksba.m4
